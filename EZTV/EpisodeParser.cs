@@ -40,43 +40,45 @@ namespace EZTV {
             if (ep == null) {
                 throw new ArgumentNullException("ep");
             }
-            // ugly regex soup
-            var m = TitleRegex1.Match(ep.Title);
-            if (!m.Success) {
-                m = TitleRegex2.Match(ep.Title);
+            try {
+                // ugly regex soup
+                var m = TitleRegex1.Match(ep.Title);
                 if (!m.Success) {
-                    m = TitleRegex3.Match(ep.Title);
+                    m = TitleRegex2.Match(ep.Title);
                     if (!m.Success) {
-                        m = TitleRegex4.Match(ep.Title);
+                        m = TitleRegex3.Match(ep.Title);
                         if (!m.Success) {
-                            throw new InvalidOperationException("Could not parse EZTVEpisode.Title");
+                            m = TitleRegex4.Match(ep.Title);
+                            if (!m.Success) {
+                                throw new InvalidOperationException("Could not parse EZTVEpisode.Title");
+                            }
                         }
                     }
                 }
-            }
 
-            ep.Show = m.Groups[1].Value;
-            if (m.Groups[2].Value.Equals("s", StringComparison.InvariantCultureIgnoreCase)) {
-                ep.Season = Convert.ToInt32(m.Groups[3].Value);
-            } else if (m.Groups[4].Value.Equals("x", StringComparison.InvariantCultureIgnoreCase)) {
-                ep.Season = Convert.ToInt32(m.Groups[3].Value);
-            }
-            else {
-                ep.Season = 1;
-            }
-            if (m.Groups[2].Value.Equals("part", StringComparison.InvariantCultureIgnoreCase)) {
-                try {
-                    ep.EpisodeNum = Convert.ToInt32(m.Groups[3].Value);
+                ep.Show = m.Groups[1].Value;
+                if (m.Groups[2].Value.Equals("s", StringComparison.InvariantCultureIgnoreCase)) {
+                    ep.Season = Convert.ToInt32(m.Groups[3].Value);
+                } else if (m.Groups[4].Value.Equals("x", StringComparison.InvariantCultureIgnoreCase)) {
+                    ep.Season = Convert.ToInt32(m.Groups[3].Value);
+                } else {
+                    ep.Season = 1;
                 }
-                catch (FormatException) {
-                    Numbers n;
-                    if (Enum.TryParse(m.Groups[3].Value, out n)) {
-                        ep.EpisodeNum = (int) n;
+                if (m.Groups[2].Value.Equals("part", StringComparison.InvariantCultureIgnoreCase)) {
+                    try {
+                        ep.EpisodeNum = Convert.ToInt32(m.Groups[3].Value);
+                    } catch (FormatException) {
+                        Numbers n;
+                        if (Enum.TryParse(m.Groups[3].Value, out n)) {
+                            ep.EpisodeNum = (int) n;
+                        }
                     }
+                } else {
+                    ep.EpisodeNum = Convert.ToInt32(m.Groups[5].Value);
                 }
-            }
-            else {
-                ep.EpisodeNum = Convert.ToInt32(m.Groups[5].Value);
+            } catch (Exception ex) {
+                ep.EpisodeNum = 0;
+                ep.Season = 0;
             }
         }
     }
