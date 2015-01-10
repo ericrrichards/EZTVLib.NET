@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using CsQuery;
 
 namespace EZTV {
@@ -41,36 +39,4 @@ namespace EZTV {
             return ep;
         }
     }
-
-    public static class EpisodeParser {
-        private static readonly Regex EpisodeUrlRegex = new Regex(@"/ep/(\d+)/.*/");
-        private static readonly Regex TitleRegex = new Regex(@"(.+) (Part|s)(\d+)(e|x)?(\d+)?(.*)", RegexOptions.IgnoreCase);
-
-        public static bool TryParseEpisodeId(string episodeUrl, out int id) {
-            id = -1;
-            if (episodeUrl == null) {
-                return false;
-            }
-            var m = EpisodeUrlRegex.Match(episodeUrl);
-            if (!m.Success) {
-                return false;
-            }
-            id = Convert.ToInt32(m.Groups[1].Value);
-            return true;
-        }
-
-        public static void ParseTitle(EZTVEpisode ep) {
-            var m = TitleRegex.Match(ep.Title);
-            if (!m.Success) return;
-
-            ep.Show = m.Groups[1].Value;
-            ep.Season = m.Groups[2].Value.Equals("s", StringComparison.InvariantCultureIgnoreCase)
-                ? Convert.ToInt32(m.Groups[3].Value)
-                : 1;
-            ep.EpisodeNum = m.Groups[2].Value.Equals("part", StringComparison.InvariantCultureIgnoreCase)
-                ? Convert.ToInt32(m.Groups[3].Value)
-                : Convert.ToInt32(m.Groups[5].Value);
-        }
-    }
-    
 }

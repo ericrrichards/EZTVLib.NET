@@ -47,6 +47,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EpisodeParser.cs" />
     <Compile Include="EZTV.cs" />
     <Compile Include="EZTVEpisodeList.cs" />
     <Compile Include="EZTVShow.cs" />
