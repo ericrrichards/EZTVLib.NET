@@ -30,12 +30,20 @@ namespace EZTV {
             var id = Convert.ToInt32(m.Groups[1].Value);
             var slug = m.Groups[2].Value;
 
-            var title = row.Find("td").Skip(1).First().Cq().Text();
+            var secondTd = row.Find("td").Skip(1).FirstOrDefault();
+            if (secondTd == null) {
+                return null;
+            }
+            var title = secondTd.Cq().Text();
             if (title.EndsWith(", The")) {
                 title = "The " + title.Substring(0, title.Length - 5);
             }
 
-            var status = row.Find("td").Skip(2).First().Cq().Find("font").Attr("class");
+            var thirdTd = row.Find("td").Skip(2).FirstOrDefault();
+            if (thirdTd == null) {
+                return null;
+            }
+            var status = thirdTd.Cq().Find("font").Attr("class");
 
             var show = new EZTVShow {
                 Url = showUrl,

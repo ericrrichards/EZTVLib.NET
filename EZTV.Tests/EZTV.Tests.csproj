@@ -51,6 +51,7 @@
   <ItemGroup>
     <Compile Include="EpisodeParserTests.cs" />
     <Compile Include="EZTVEpisodeTests.cs" />
+    <Compile Include="EZTVShowTests.cs" />
     <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
