@@ -36,8 +36,8 @@ namespace EZTV {
             var eps = dom["table.forum_header_noborder tr[name=hover]"].Select(e => e.OuterHTML);
 
             var episodes = new EZTVEpisodeList {
-                ID = showId,
-                Title = title,
+                ShowID = showId,
+                ShowTitle = title,
                 Episodes = eps.Select(EZTVEpisode.ParseEpisode).Where(ep => ep != null).ToList()
             };
             return episodes;

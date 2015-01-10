@@ -4,8 +4,8 @@ using CsQuery;
 
 namespace EZTV {
     public class EZTVEpisodeList {
-        public int ID { get; set; }
-        public string Title { get; set; }
+        public int ShowID { get; set; }
+        public string ShowTitle { get; set; }
         public List<EZTVEpisode> Episodes { get; set; }
     }
     
@@ -20,19 +20,38 @@ namespace EZTV {
 
 
         public static EZTVEpisode ParseEpisode(string episode) {
+            if (episode == null) {
+                return null;
+            }
             CQ o = episode;
-            
-            var episodeUrl = o.Find("td").Skip(1).First().Cq().Find("a").Attr("href");
+
+            var tds = o.Find("td");
+            if (tds.Length == 0) {
+                return null;
+            }
+            var secondTd = tds.Skip(1).FirstOrDefault();
+            if (secondTd == null) {
+                return null;
+            }
+            var episodeUrl = secondTd.Cq().Find("a").Attr("href");
             
             int id;
             if (!EpisodeParser.TryParseEpisodeId(episodeUrl, out id)) {
                 return null;
             }
+            var thirdTd = tds.Skip(2).FirstOrDefault();
+            if (thirdTd == null) {
+                return null;
+            }
+            var magnetLink = thirdTd.Cq().Find("a.magnet");
+            if (magnetLink.Length == 0) {
+                return null;
+            }
             var ep = new EZTVEpisode {
                 Url = episodeUrl,
                 ID = id,
-                Title = o.Find("td").Skip(1).First().Cq().Find("a").Text(),
-                Magnet = o.Find("td").Skip(2).First().Cq().Find("a.magnet").Attr("href")
+                Title = secondTd.Cq().Find("a").Text(),
+                Magnet = magnetLink.Attr("href")
             };
             EpisodeParser.ParseTitle(ep);
 
