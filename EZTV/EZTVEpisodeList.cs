@@ -17,6 +17,8 @@ namespace EZTV {
         public int Season { get; set; }
         public int EpisodeNum { get; set; }
         public string Magnet { get; set; }
+        public bool InLibrary { get; set; }
+        public int LibId { get; set; }
 
 
         public static EZTVEpisode ParseEpisode(string episode) {

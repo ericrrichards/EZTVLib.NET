@@ -1,18 +1,28 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
 using CsQuery;
 
 namespace EZTV {
     public static class EZTV {
+        private const string ShowListPath = "showlist/";
+        public static string baseUrl1 = "http://eztv.it/";
+        public static string baseUrl2 = "https://eztv-proxy.net/";
+
         public static List<EZTVShow> GetShows(string query = "") {
             var wc = new WebClient();
-            const string url = "http://eztv.it/showlist/";
-
-            var page = wc.DownloadString(url);
-
+            string url = Path.Combine(baseUrl1, ShowListPath);
+            string page;
+            try {
+                page = wc.DownloadString(url);
+            } catch (Exception) {
+                url = Path.Combine(baseUrl2, ShowListPath);
+                page = wc.DownloadString(url);
+            }
             CQ dom = page;
-            var elements = dom["table.forum_header_border tr[name=hover]"].Select(e=>e.OuterHTML);
+            var elements = dom["table.forum_header_border tr[name=hover]"].Select(e => e.OuterHTML);
             var showList = elements.Select(EZTVShow.ParseShow).Where(show => show != null).ToList();
 
             if (string.IsNullOrEmpty(query)) {
@@ -22,13 +32,14 @@ namespace EZTV {
         }
 
         public static EZTVEpisodeList GetEpisodes(int showId) {
-            var url = string.Format("http://eztv.it/shows/{0}/", showId);
+            var url = string.Format("{1}shows/{0}/", showId, baseUrl1);
             var wc = new WebClient();
             string page;
             try {
                 page = wc.DownloadString(url);
             } catch {
-                return null;
+                url = string.Format("{1}shows/{0}/", showId, baseUrl2);
+                page = wc.DownloadString(url);
             }
 
             CQ dom = page;
